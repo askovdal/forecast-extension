@@ -1,0 +1,13 @@
+{
+  "name": "forecast-extension",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/askovdal/forecast-extension.git"
+  },
+  "author": "Andreas Skovdal",
+  "devDependencies": {
+    "@types/chrome": "0.0.127",
+    "prettier": "^2.2.1"
+  }
+}
