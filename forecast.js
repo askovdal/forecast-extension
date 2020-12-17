@@ -1,19 +1,24 @@
-// TODO: Look for URL changes and run relevant functions again
-
-const waitForElements = async (selector, delay = 1000) => {
+const waitForElements = async (
+  selectors,
+  delay = 1000,
+  retries = 0,
+  maxRetries = 5
+) => {
   // Search for the elements
-  const elements = document.querySelectorAll(selector);
-
-  console.log('Looking..');
+  const elements = document.querySelectorAll(selectors);
 
   if (!elements.length) {
+    if (retries === maxRetries) {
+      throw `Elements with selectors "${selectors}" not found after ${maxRetries} retries`;
+    }
+
     // If the elements weren't found, wait for ~"delay" milliseconds
     await new Promise((resolve) => {
       setTimeout(resolve, delay);
     });
 
     // Look for the elements again, creating a loop
-    return waitForElements(selector, delay);
+    return waitForElements(selectors, delay, ++retries);
   }
 
   // If the elements were found, return them, stopping the loop
@@ -22,13 +27,20 @@ const waitForElements = async (selector, delay = 1000) => {
 
 const setCommentDates = (timeAgoEls) => {
   // TODO: Allow for different date formats
-  timeAgoEls.forEach((timeAgoEl) => {
+  for (const timeAgoEl of timeAgoEls) {
     timeAgoEl.textContent = timeAgoEl.getAttribute('title');
-  });
+  }
 };
 
-const showCommentDates = async () => {
-  const timeAgoEls = await waitForElements('.time-ago');
+const showCommentDates = async (taskId) => {
+  let timeAgoEls;
+  try {
+    timeAgoEls = await waitForElements('.time-ago');
+  } catch (e) {
+    console.debug(`No comments found for task ${taskId}: ${e}`);
+    return;
+  }
+
   setCommentDates(timeAgoEls);
 
   // Observe dynamically added comments and set the comment date of those as
@@ -49,5 +61,16 @@ const showCommentDates = async () => {
   });
 };
 
-// TODO: Only run this on task pages (reuse regex from forecast-unfurl).
-void showCommentDates();
+const extendTaskPage = (taskId) => {
+  void showCommentDates(taskId);
+};
+
+chrome.runtime.onMessage.addListener(({ event, url }) => {
+  if (event === 'forecastUrlUpdated') {
+    // Check if the new URL is a task page
+    const taskIdMatch = url.match(/\/T(\d+)(?:$|#)/);
+    if (taskIdMatch) {
+      extendTaskPage(taskIdMatch[1]);
+    }
+  }
+});
