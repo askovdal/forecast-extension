@@ -4,12 +4,16 @@ const waitForElements = async (
   retries = 0,
   maxRetries = 5
 ) => {
+  console.debug(`Looking for elements with selectors "${selectors}"...`);
+
   // Search for the elements
   const elements = document.querySelectorAll(selectors);
 
   if (!elements.length) {
     if (retries === maxRetries) {
-      throw `Elements with selectors "${selectors}" not found after ${maxRetries} retries`;
+      const message = `Elements with selectors "${selectors}" not found after ${maxRetries} retries`;
+      console.debug(message);
+      throw message;
     }
 
     // If the elements weren't found, wait for ~"delay" milliseconds
@@ -22,13 +26,16 @@ const waitForElements = async (
   }
 
   // If the elements were found, return them, stopping the loop
+  console.debug(`Found elements with selectors "${selectors}"`);
   return elements;
 };
 
 const setCommentDates = (timeAgoEls) => {
   // TODO: Allow for different date formats
   for (const timeAgoEl of timeAgoEls) {
-    timeAgoEl.textContent = timeAgoEl.getAttribute('title');
+    const date = timeAgoEl.getAttribute('title');
+    console.debug(`Replacing timestamp on comment with "${date}"...`);
+    timeAgoEl.textContent = date;
   }
 };
 
@@ -37,7 +44,7 @@ const showCommentDates = async (taskId) => {
   try {
     timeAgoEls = await waitForElements('.time-ago');
   } catch (e) {
-    console.debug(`No comments found for task ${taskId}: ${e}`);
+    console.debug(`No comments found for task ${taskId}`);
     return;
   }
 
@@ -66,6 +73,7 @@ const extendTaskPage = (taskId) => {
 };
 
 chrome.runtime.onMessage.addListener(({ event, url }) => {
+  console.debug(`Received event "${event}"`);
   if (event === 'forecastUrlUpdated') {
     // Check if the new URL is a task page
     const taskIdMatch = url.match(/\/T(\d+)(?:$|#)/);
