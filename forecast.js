@@ -82,7 +82,7 @@ const setTaskPageDocumentTitle = async (taskId) => {
     return;
   }
 
-  const title = `T${taskId} - ${taskNameEl.value}`;
+  const title = `T${taskId} ${taskNameEl.value}`;
 
   console.debug(`📝 Setting document title to "${title}"...`);
 
