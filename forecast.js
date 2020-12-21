@@ -31,7 +31,7 @@ const waitForElements = async (
 };
 
 const setCommentDates = (timeAgoEls) => {
-  // TODO: Allow for different date formats
+  // TODO: Add option for different date formats
   for (const timeAgoEl of timeAgoEls) {
     const date = timeAgoEl.getAttribute('title');
     console.debug(`📅 Replacing timestamp on comment with "${date}"...`);
@@ -40,9 +40,8 @@ const setCommentDates = (timeAgoEls) => {
 };
 
 const showCommentDates = async (taskId) => {
-  let timeAgoEls;
   try {
-    timeAgoEls = await waitForElements('.time-ago');
+    const timeAgoEls = await waitForElements('.time-ago');
     setCommentDates(timeAgoEls);
   } catch (e) {
     console.debug(`❌ No comments found for task ${taskId}`);
