@@ -1,10 +1,17 @@
+let showDebug = false;
+chrome.storage.sync.get({ debug: false }, ({ debug }) => (showDebug = debug));
+
+const debug = (message) => {
+  showDebug && console.debug(message);
+};
+
 const waitForElements = async (
   selectors,
   delay = 1000,
   maxRetries = 5,
   retries = 0
 ) => {
-  console.debug(`👁️ Looking for elements with selectors "${selectors}"...`);
+  debug(`👁️ Looking for elements with selectors "${selectors}"...`);
 
   // Search for the elements
   const elements = document.querySelectorAll(selectors);
@@ -12,7 +19,7 @@ const waitForElements = async (
   if (!elements.length) {
     if (retries === maxRetries) {
       const message = `❌ Elements with selectors "${selectors}" not found after ${maxRetries} retries`;
-      console.debug(message);
+      debug(message);
       throw message;
     }
 
@@ -26,7 +33,7 @@ const waitForElements = async (
   }
 
   // If the elements were found, return them, stopping the loop
-  console.debug(`✅ Found elements with selectors "${selectors}"`);
+  debug(`✅ Found elements with selectors "${selectors}"`);
   return elements;
 };
 
@@ -34,7 +41,7 @@ const setCommentDates = (timeAgoEls) => {
   // TODO: Add option for different date formats
   for (const timeAgoEl of timeAgoEls) {
     const date = timeAgoEl.getAttribute('title');
-    console.debug(`📅 Replacing timestamp on comment with "${date}"...`);
+    debug(`📅 Replacing timestamp on comment with "${date}"...`);
     timeAgoEl.textContent = date;
   }
 };
@@ -44,7 +51,7 @@ const showCommentDates = async (taskId) => {
     const timeAgoEls = await waitForElements('.time-ago');
     setCommentDates(timeAgoEls);
   } catch (e) {
-    console.debug(`❌ No comments found for task ${taskId}`);
+    debug(`❌ No comments found for task ${taskId}`);
   }
 
   // Observe dynamically added comments and set the comment date of those as
@@ -74,13 +81,13 @@ const setTaskPageDocumentTitle = async (taskId) => {
   try {
     [taskNameEl] = await waitForElements('#task-modal-task-name');
   } catch (e) {
-    console.debug(`❌ No task name found for task ${taskId}`);
+    debug(`❌ No task name found for task ${taskId}`);
     return;
   }
 
   const title = `T${taskId} ${taskNameEl.value}`;
 
-  console.debug(`📝 Setting document title to "${title}"...`);
+  debug(`📝 Setting document title to "${title}"...`);
 
   document.title = title;
 };
@@ -89,14 +96,14 @@ const setRealDocumentTitle = () => {
   // If the document title doesn't have a task, do an early return
   if (!document.title.match(/T\d+/)) return;
 
-  console.debug(`📝 Setting document title back to "${realDocumentTitle}"...`);
+  debug(`📝 Setting document title back to "${realDocumentTitle}"...`);
 
   // Restore the real document title from the global variable
   document.title = realDocumentTitle;
 };
 
 chrome.runtime.onMessage.addListener(({ event, url }) => {
-  console.debug(`📢 Received event "${event}"`);
+  debug(`📢 Received event "${event}"`);
 
   // Check if the new URL is a task page
   const taskIdMatch = url.match(/\/T(\d+)(?:$|#)/);
