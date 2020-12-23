@@ -1,8 +1,8 @@
 const waitForElements = async (
   selectors,
   delay = 1000,
-  retries = 0,
-  maxRetries = 5
+  maxRetries = 5,
+  retries = 0
 ) => {
   console.debug(`👁️ Looking for elements with selectors "${selectors}"...`);
 
@@ -22,7 +22,7 @@ const waitForElements = async (
     });
 
     // Look for the elements again, creating a loop
-    return waitForElements(selectors, delay, ++retries);
+    return waitForElements(selectors, delay, maxRetries, ++retries);
   }
 
   // If the elements were found, return them, stopping the loop
