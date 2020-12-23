@@ -60,10 +60,7 @@ const showCommentDates = async (taskId) => {
         }
       }
     }
-  }).observe(commentsEl, {
-    childList: true,
-    subtree: true,
-  });
+  }).observe(commentsEl, { childList: true, subtree: true });
 };
 
 let realDocumentTitle = '';

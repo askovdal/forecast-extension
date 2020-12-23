@@ -8,10 +8,7 @@ chrome.tabs.onUpdated.addListener((tabId, { status, title }, { url }) => {
     }
 
     if (event) {
-      chrome.tabs.sendMessage(tabId, {
-        event,
-        url,
-      });
+      chrome.tabs.sendMessage(tabId, { event, url });
     }
   }
 });
