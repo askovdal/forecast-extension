@@ -7,7 +7,7 @@
   },
   "author": "Andreas Skovdal",
   "devDependencies": {
-    "@types/chrome": "0.0.127",
-    "prettier": "^2.2.1"
+    "@types/chrome": "0.0.128",
+    "prettier": "2.2.1"
   }
 }

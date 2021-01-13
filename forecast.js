@@ -111,14 +111,14 @@ chrome.runtime.onMessage.addListener(({ event, url }) => {
 
   if (event === 'urlUpdated') {
     if (taskId) {
-      void showCommentDates(taskId);
-      void setTaskPageDocumentTitle(taskId);
+      showCommentDates(taskId);
+      setTaskPageDocumentTitle(taskId);
     } else {
       setRealDocumentTitle();
     }
   } else if (event === 'documentTitleUpdated') {
     if (taskId) {
-      void setTaskPageDocumentTitle(taskId);
+      setTaskPageDocumentTitle(taskId);
     }
   }
 });
