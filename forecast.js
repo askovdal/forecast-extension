@@ -39,10 +39,28 @@ const waitForElements = async (
 
 const setCommentDates = (timeAgoEls) => {
   // TODO: Add option for different date formats
+  // Get timezone offset in hours
+  const offsetHours = new Date().getTimezoneOffset() / 60;
+
+  // Regular expression that matches the hour in the date
+  const hourRegex = /(\d+):/;
+
   for (const timeAgoEl of timeAgoEls) {
     const date = timeAgoEl.getAttribute('title');
-    debug(`📅 Replacing timestamp on comment with "${date}"...`);
-    timeAgoEl.textContent = date;
+
+    // Extract hour from date
+    const hour = parseInt(hourRegex.exec(date)[1]);
+
+    // Subtract offset from hour to get the local time (this won't work in the
+    // edge cases where 1 > (hour - offsetHours) > 24, but it's fine for this
+    // use case)
+    const localHour = hour - offsetHours;
+
+    // Assemble local date by replacing the original hour with the local hour
+    const localDate = date.replace(hourRegex, `${localHour}:`);
+
+    debug(`📅 Replacing timestamp on comment with "${localDate}"...`);
+    timeAgoEl.textContent = localDate;
   }
 };
 
